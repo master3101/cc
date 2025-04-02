@@ -1,0 +1,99 @@
+---------------------------------------------------------------Practical 7 HyperV-------------------------------------------------------------------
+Aim:Implement Windows Hyper V virtualisation
+
+[ If Hyper v is not there in the Windows feature then ->How to install and enable Hyper-V on Windows 11/10 Home 
+Script to Enable Hyper-V
+
+pushd "%~dp0"
+dir /b %SystemRoot%\servicing\Packages\Hyper-V.mum >hyper-v.txt
+for /f %%i in ('findstr /i . hyper-v.txt 2^>nul') do dism /online /norestart /add-package:"%SystemRoot%\servicing\Packages\%%i"
+del hyper-v.txt
+Dism /online /enable-feature /featurename:Microsoft-Hyper-V -All /LimitAccess /ALL
+pause
+
+copy the above code in notepad and save it with Enable Hyper-V.bat extension and after that right click on this .bat file and run it as adminstrator the hyper v will be enable and if still any error occurs kindly change the pc. ]
+
+Step 1: Search for windows features on or off in search bar and open it.
+Step 2:Now scroll down click on  Hyper-v  (“Don’t Click  ok go to step no 3”).
+Step 3:Now scroll down click on  Windows Sandbox and then click on ok
+Step 4: Now Click on Restart Now (Pc will restart automatically and  it will take few minutes for the setup.)
+Step 5 : Now in Start Search for Hyper V-manager and open it.
+Step 6 : Now click on the new-> Virtual Machine (Located on the right hand side of the tab) to create a virtual machine.
+Step 7 : Press next and then assign the name for virtual machine and click on next.--> Specify Generation-->Select Gen 1--> Next
+Step 8 :  Now in the next assign memory(RAM ) 2048 or 4096 MB and click on next.
+Step 9 : Now in the Configure networking section select Default switch and click on next.
+Step 10 : Now in Connect Virtual Hard Disk Section select the location where you want to save the VM file And now increase of memory to 140GB and click on next (Note:select the drive which have atleast 140 GB free .)
+Step 11 : Now in Installation Option  section Select “Install an operating system from cd/DVD-ROM” ,
+Then Click on Image file -> Browse.. and select the Ubuntu Iso file and click on next. 
+(This file is in the TYCS_CC_SOFTWARE folder )
+Step 12 : Now click on the finish Now the Vm is created
+Step 13 : Now click on “Connect” located Right Handside in the Action (under the name of virtual machine which you have given.)
+Step 14 : Now click on start.
+Step 15 : Now use arrow keys and select the try or install ubuntu and press enter.
+after the installation perform the terminal command (press Ctrl, Alt and T keys together).
+i)Display present working directory: pwd.
+ii)Display today's date: date.
+iii) Display calendar of current year: cal
+iv) Display list of all users currently logged in: who.
+v) Display message "Hello World": echo "Hello World"
+
+----------------------------------------------------------------------Practical 8 ESXI-----------------------------------------------------------------------
+Aim:Implement virtualisation using VMWare ESXi Server and managing with vCenter
+
+Step 1:Open VMWare Workstation and Click on File->New Virtual Machine->Select Typical-->Next.
+Step 2:Select Installer disc image file -> Browse and select and your iso file(VMvisor Installer.iso) ->Next.
+Step 3:Name the Virtual Machine->Choose the location where you want to store your virtual machine- >  Enter the Size 40GB->Next.
+Note:-(Select the drive which have atleast 50GB free)
+step 4:Click on Finish.You can now see your Virtual Machine.
+step 5:Go to Edit virtual machine->click on Processors and then uncheck all the virtualization engine.
+step 6:Power on the VM and hit enter.
+Step 6.1:Wait for the ESXi to load->Select ESXi Standard Installer and Enter
+Step 7:Hit Enter and then F11 to continue->Enter
+step 8:Press Enter-> Select the Language ->US default.
+step 9:Enter the password and confirm installation.
+Step 10:Hit Enter and wait for rebooting server and then loading.
+Perform below steps in viclient
+Step 11:Install Viclient from TYCS_CC_SOFTWARES.And Open VMWare vSphere Client from start menu and type ip address which you will get from the ESXi VM and  enter the username:- root and password - same which was entered in step 9  and press login-->Ignore certificate.
+Step 12: After Login Click on Inventory -> Configuration tab.below localhost.localdomain.
+step 13: In Hardware Tab click on Storage-> datastore1.
+Step 14:Right CLick on datastore1->Browse datastore.
+Step 15:CLick on upload-->Upload Files and Select 'WIndows XP'iso file and upload it-->After uploading close the datastore1 tab.
+Step 16: Now go to 'Getting Started'-->Create a virtual machine-->typical->Next-->ENter name for your vm-->next-->Storage next-->Select Windows-->version 'Windows Xp pro 32bits' next-->next-->virtual disk size:8GB next-->Finish.
+STep 17: Below the ip address a new vm will appear.-->Right click on it -->Edit settings-->CD/DVD-->Select datastore iso file-->Browse-->datastore1-->Microsoft Windows XP iso file--->OK-->In Device status,Check Connect at power on.-->OK
+STep 18: Now click on the VM and Start it and go to console.
+
+---------------------------Practical 9 KVM------------------------
+Aim: Installation and Configuration of virtualization using KVM.
+
+Step 1: For creating a new virtual machine->Open VM Ware->Click on File->Click on New Virtual Machine.
+Step 2: Click on next. 
+Step 3: Select 'I will install os later'
+Step 3: Select ‘Linux’ and version ‘Red Hat Enterprise Linux 7 64-bit’ and Click on Next.
+Step 4: Give name to your VM: 'Red Hat Enterprise Linux 7 64-bit'
+Select Location where you want to save your VM file-->Now open the browse and click on the ‘D drive’ in the D drive click on VM folder in VM create one new folder name as ‘R7’ and then click on next.
+Step 5: Now set the maximum disk size to ‘40’ and click on next And select 'split virtual disk into multiple files'
+Step 6: Now Click on finish. OR 'Customise Hardware'-->Step8
+Step 7: Now click on edit virtual machine settings.
+Step 8: Now Click on memory and set memory as 4GB.
+Step 9: Now click on ‘CD\DVD’ and in connection select ‘use ISO image file’.select the iso image file and click on close-->Finish.
+Step 10: Now power on the Virtual machine.
+
+NOTE : Let the linux machine start and configure it 
+Step 11: Now select on install Red Hat Enterprises Linux.
+Step 12: Now select the language (English-->English US) and go to Software Selection.
+Step 13: In Base environment->select server with GUI and in Add-ons for selected environment->select Virtualization Client and Virtualization Hypervisor and click on done.
+Step 14:click Begin Installation.
+Step 15: Now click on Root Password. and Enter 123456 in password and confirmpassword.Click on Done.
+Step 16: Click on User Creation and fill the details click Done.
+	Full Name: MegaBytes
+	Password and confirm password: 123456
+Step 17: Click on Reboot
+Step 18: Select License Information and accept the conditions.
+Step 18: Your account will appear -> type the password.
+Step 19: Your Desktop will appear.
+Step 20: Run these commands on terminal:
+i)Display present working directory: pwd.
+ii)Display today's date: date.
+iii) Display calendar of current year: cal
+iv) Display list of all users currently logged in: who.
+v) Display message "Hello World": echo "Hello World"

@@ -1,0 +1,845 @@
+-----------------------------------------CC Practicals-------------------------------------------
+------------------------------------------Practical 1 (TCP)----------------------------------------------
+Aim : Write a program for implementing Client Server communication model using TCP
+Practical 1A: A client server based program using TCP to find if the number entered is prime.
+Step 1: Create two Java files in notepad.
+
+i)File 1:tcpClientPrime.java-
+import java.net.*;
+import java.io.*;
+class tcpClientPrime
+{
+	public static void main(String [] args)
+	{
+		try
+	{
+		Socket cs = new Socket("LocalHost",8001); 		
+		BufferedReader infu = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("Enter a number : ");
+		int a = Integer.parseInt(infu.readLine());
+		DataOutputStream out = new DataOutputStream(cs.getOutputStream());
+		out.writeInt(a);
+		DataInputStream in = new DataInputStream(cs.getInputStream()); 
+		System.out.println(in.readUTF()); cs.close();
+	}
+		catch(Exception e)
+		{
+			System.out.println(e.toString());
+		}
+	
+
+	
+	}
+}
+CMD:-------   javac tcpClientPrime.java-->java  tcpClientPrime
+
+ii)File 2: tcpServerPrime.java-
+import java.net.*;
+import java.io.*;
+class tcpServerPrime
+{
+	public static void main(String args[])
+	{
+	try
+	{
+	ServerSocket ss = new ServerSocket(8001);
+	System.out.println("Server Started...............");
+	Socket s = ss.accept();
+	DataInputStream in = new DataInputStream(s.getInputStream()); int x= in.readInt();
+	DataOutputStream otc = new DataOutputStream(s.getOutputStream()); int y = x/2;
+	if(x ==1 || x ==2 || x ==3)
+		{
+		otc.writeUTF(x + "is Prime");
+		System.exit(0);
+		}
+	for(int i=2; i<=y; i++)
+	{
+	if(x%i != 0)
+		{
+		otc.writeUTF(x + " is Prime");
+		}
+	else
+	{
+		otc.writeUTF(x + " is not Prime");
+	}
+	}
+}
+catch(Exception e)
+{
+System.out.println(e.toString());
+}
+}
+}
+
+Step 2: Open 2 command prompt & enter the following commands to run the files.
+In 1st command prompt, enter the following command for Server-side file.
+Command 1: javac tcpServerPrime.java-->Command 2: java tcpServerPrime
+In 2nd command prompt, enter the following command for Client-side file.
+Command 1: javac tcpClientPrime.java-->Command 2: java tcpClientPrime
+
+Practical 1B: A client server TCP based chatting application.
+i) File 1: ChatServer.java
+import java.net.*;
+import java.io.*;
+class ChatServer
+{
+	public static void main(String args[])
+	{
+	try
+	{
+		ServerSocket ss = new ServerSocket(8000); 
+		System.out.println("Waiting for client to connect.."); 
+		Socket s = ss.accept();
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		DataOutputStream out = new DataOutputStream(s.getOutputStream()); 
+		DataInputStream in = new DataInputStream(s.getInputStream()); 
+		String receive, send;
+		while((receive = in.readLine()) != null)
+		{
+			if(receive.equals("STOP"))
+				break;
+			System.out.println("Client Says : "+receive);
+			System.out.print("Server Says : ");
+			send = br.readLine();
+			out.writeBytes(send+"\n");
+		}
+	br.close();
+	in.close();
+	out.close();
+	s.close();
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+}
+}
+
+In 1st command prompt, enter the following command for Server-side file.
+Command 1: javac ChatServer.java-->Command 2: java ChatServer
+
+ii)ChatClient.java-
+import java.net.*;
+import java.io.*;
+class ChatClient
+{
+	public static void main(String args[])
+	{
+	try
+	{
+	Socket s = new Socket("Localhost",8000); 
+	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	DataOutputStream out = new DataOutputStream(s.getOutputStream()); 
+	DataInputStream in = new DataInputStream(s.getInputStream()); 
+	String msg;
+	System.out.println("To stop chatting with server type STOP"); 
+	System.out.print("Client Says: "); 
+	while((msg = br.readLine()) != null)
+	{
+		out.writeBytes(msg+"\n");
+		if(msg.equals("STOP"))
+			break;
+		System.out.println("Server Says : "+in.readLine());
+		System.out.print("Client Says : ");
+	}
+	br.close();
+	in.close();
+	out.close();
+	s.close();
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+}
+}
+ 
+In 2nd command prompt, enter the following command for Client-side file.
+Command 1: javac ChatClient.java-->Command 2: java ChatServer
+
+------------------------------------------------------Practical 2 (UDP)------------------------------------------------------------------
+Aim: Write a program for implementing Client Server communication model using UDP.
+Practical 2A: A client server based program using UDP to find if the number entered is even or odd.
+Code:
+1.File 1:udpServerEO.java-
+import java.io.*;
+import java.net.*;
+public class udpServerEO
+{
+public static void main(String args[])
+{
+try
+{
+DatagramSocket ds = new DatagramSocket(2000); 
+byte b[] = new byte[1024]; 
+DatagramPacket dp = new DatagramPacket(b,b.length); 
+ds.receive(dp);
+String str = new String(dp.getData(),0,dp.getLength()); System.out.println(str);
+int a= Integer.parseInt(str); String s= new String();
+if (a%2 == 0)
+s = "Number is even";
+else
+s = "Number is odd";
+byte b1[] = new byte[1024]; b1 = s.getBytes(); DatagramPacket dp1 = new
+DatagramPacket(b1,b1.length,InetAddress.getLocalHost(),1000); ds.send(dp1);
+ 
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+}
+}
+
+2. File2 :udpClientEO.java -
+import java.io.*; import java.net.*;
+public class udpClientEO
+{
+public static void main(String args[])
+{
+try
+{
+DatagramSocket ds = new DatagramSocket(1000); 
+BufferedReader br = new BufferedReader(new InputStreamReader(System.in));  System.out.println("Enter a number : "); 
+String num = br.readLine();
+byte b[] = new byte[1024]; b=num.getBytes(); DatagramPacket dp = new
+DatagramPacket(b,b.length,InetAddress.getLocalHost(),2000); ds.send(dp);
+byte b1[] = new byte[1024];
+DatagramPacket dp1 = new DatagramPacket(b1,b1.length); ds.receive(dp1); String str = new String(dp1.getData(),0,dp1.getLength());
+System.out.println(str);
+}
+catch(Exception e)
+{
+e.printStackTrace();
+}
+}
+}
+
+In 1st command prompt, enter the following command for Server-side file.
+Command 1: javac udpServerEO.java-->Command 2: java udpServerEO 
+In 2nd command prompt, enter the following command for Client-side file.
+Command 1: javac udpClientEO.java -->Command 2: java udpClientEO
+
+Practical 2B: A client server based program using UDP to find the factorial of the entered number.
+1. File 1:udpServerFact.java-
+import java.io.*;
+import java.net.*;
+
+public class udpServerFact {
+    public static void main(String args[]) {
+        try {
+            DatagramSocket ds = new DatagramSocket(2000);
+            byte b[] = new byte[1024];
+            DatagramPacket dp = new DatagramPacket(b, b.length);
+            ds.receive(dp);
+            String str = new String(dp.getData(), 0, dp.getLength());
+            System.out.println(str);
+            int a = Integer.parseInt(str);
+            int f = 1, i;
+            String s = new String();
+            for (i = 1; i <= a; i++) {
+                f = f * i;
+            }
+            s = Integer.toString(f);
+            String str1 = "The Factorial of " + str + " is : " + f;
+            byte b1[] = new byte[1024];
+            b1 = str1.getBytes();
+            DatagramPacket dp1 = new DatagramPacket(b1, b1.length, InetAddress.getLocalHost(), 1000);
+            ds.send(dp1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+2. File2:udpClientFact.java-
+import java.io.*;
+import java.net.*;
+public class udpClientFact {
+		public static void main(String args[]) { 
+
+try
+ {
+DatagramSocket ds = new DatagramSocket(1000); 
+BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+System.out.println("Enter a number : "); 
+
+String num = br.readLine();
+ byte b[] = new byte[1024];
+ b=num.getBytes();
+DatagramPacket dp = new DatagramPacket(b,b.length,InetAddress.getLocalHost(),2000); 
+ds.send(dp);
+byte b1[] = new byte[1024];
+DatagramPacket dp1 = new DatagramPacket(b1,b1.length);
+
+ ds.receive(dp1);
+ String str = new String(dp1.getData(),0,dp1.getLength()); 
+System.out.println(str);
+	} 
+catch(Exception e)
+	 { 
+	e.printStackTrace();
+	}
+}
+}
+
+In 1st command prompt, enter the following command for Server-side file.
+Command 1: javac udpServerFact.java-->Command 2: java udpServerFact
+In 2nd command prompt, enter the following command for Client-side file.
+Command 1: javac udpClientFact.java-->Command 2: java udpClientFact
+
+Practical 2C: A program to implement simple calculator operations like addition, subtraction, multiplication and division.
+1.File1: RPCClient.java -
+import java.io.*;
+import java.net.*;
+class RPCClient {
+    RPCClient() {
+        try {
+            InetAddress ia = InetAddress.getLocalHost();
+            DatagramSocket ds = new DatagramSocket();
+            DatagramSocket ds1 = new DatagramSocket(1300);
+            System.out.println("\nRPC Client\n");
+            System.out.println("Enter method name and parameter like add 3 4\n");
+
+            while (true) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                String str = br.readLine();
+                byte b[] = str.getBytes();
+                DatagramPacket dp = new DatagramPacket(b, b.length, ia, 1200);
+                ds.send(dp);
+                dp = new DatagramPacket(b, b.length);
+                ds1.receive(dp);
+                String s = new String(dp.getData(), 0, dp.getLength());
+                System.out.println("\nResult = " + s + "\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        new RPCClient();
+    }
+}
+
+2.File 2 :RPCServer.java -
+import java.util.*;
+import java.net.*;
+class RPCServer {
+    DatagramSocket ds;
+    DatagramPacket dp;
+    String str, methodName, result;
+    int val1, val2;
+
+    RPCServer() {
+        try {
+            ds = new DatagramSocket(1200);
+            byte b[] = new byte[4096];
+            while (true) {
+                dp = new DatagramPacket(b, b.length);
+                ds.receive(dp);
+                str = new String(dp.getData(), 0, dp.getLength());
+                if (str.equalsIgnoreCase("q")) {
+                    System.exit(1);
+                } else {
+                    StringTokenizer st = new StringTokenizer(str, " ");
+                    int i = 0;
+                    while (st.hasMoreTokens()) {
+                        String token = st.nextToken();
+                        methodName = token;
+                        val1 = Integer.parseInt(st.nextToken());
+                        val2 = Integer.parseInt(st.nextToken());
+                    }
+                }
+                System.out.println(str);
+                InetAddress ia = InetAddress.getLocalHost();
+                if (methodName.equalsIgnoreCase("add")) {
+                    result = "" + add(val1, val2);
+                } else if (methodName.equalsIgnoreCase("sub")) {
+                    result = "" + sub(val1, val2);
+                } else if (methodName.equalsIgnoreCase("mul")) {
+                    result = "" + mul(val1, val2);
+                } else if (methodName.equalsIgnoreCase("div")) {
+                    result = "" + div(val1, val2);
+                }
+                byte b1[] = result.getBytes();
+                DatagramSocket ds1 = new DatagramSocket();
+                DatagramPacket dp1 = new DatagramPacket(b1, b1.length, InetAddress.getLocalHost(), 1300);
+                System.out.println("result :" + result + "\n");
+                ds1.send(dp1);
+                ds1.close(); // Close the DatagramSocket after sending the response.
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int add(int val1, int val2) {
+        return val1 + val2;
+    }
+
+    public int sub(int val1, int val2) {
+        return val1 - val2;
+    }
+
+    public int mul(int val1, int val2) {
+        return val1 * val2;
+    }
+
+    public int div(int val1, int val2) {
+        if (val2 != 0) {
+            return val1 / val2;
+        } else {
+            return 0; // You should handle division by zero error.
+        }
+    }
+
+    public static void main(String[] args) {
+        new RPCServer();
+    }
+}
+
+In 1st command prompt, enter the following command for Client-side file.
+Command 1: javac RPCServer.java
+Command 2: java RPCCServer
+
+In 2nd command prompt, enter the following command for Server-side file.
+Command 1: javac RPCClient.java
+Command 2: java RPCClient
+ ----------------------------------------------- 2D-----------------------------
+Practical 2D: A program that finds the square, square root, cube and cube root of the entered number.
+Code:
+1.	RPCNumServer.java
+package HI;
+import java.util.*;
+import java.net.*;
+import java.io.*;
+public class RPCNumServer 
+{
+DatagramSocket ds;
+DatagramPacket dp;
+String str,methodName,result;
+int val;
+RPCNumServer()
+{
+try
+{
+ds=new DatagramSocket(1200);
+byte b[]=new byte[4096];
+while(true)
+{
+dp=new DatagramPacket(b,b.length);
+ds.receive(dp);
+str=new String(dp.getData(),0,dp.getLength());
+if(str.equalsIgnoreCase("q")) {
+System.exit(1);
+}
+else
+{
+StringTokenizer st = new StringTokenizer(str," ");
+int i=0;
+while(st.hasMoreTokens())
+{
+String token=st.nextToken();
+methodName=token;
+val = Integer.parseInt(st.nextToken());
+}
+}
+System.out.println(str);
+InetAddress ia = InetAddress.getLocalHost();
+if(methodName.equalsIgnoreCase("square"))
+{
+result= "" + square(val);
+}
+else if(methodName.equalsIgnoreCase("squareroot"))
+{
+result= "" + squareroot(val);
+}
+else if(methodName.equalsIgnoreCase("cube"))
+{
+result= "" + cube(val);
+}
+else if(methodName.equalsIgnoreCase("cuberoot"))
+{
+result= "" + cuberoot(val);
+}
+byte b1[]=result.getBytes();
+DatagramSocket ds1 = new DatagramSocket();
+DatagramPacket dp1 = new
+DatagramPacket(b1,b1.length,InetAddress.getLocalHost(), 1300);
+System.out.println("result : "+result+"\n"); ds1.send(dp1);
+}
+}
+catch (Exception e)
+{
+e.printStackTrace();
+}
+}
+public double square(int a) throws Exception
+{
+double ans;
+ans = a*a;
+return ans;
+}
+public double squareroot(int a) throws Exception
+{
+double ans;
+ans = Math.sqrt(a);
+return ans;
+}
+public double cube(int a) throws Exception
+{
+double ans;
+ans = a*a*a;
+return ans;
+}
+public double cuberoot(int a) throws Exception
+{
+double ans;
+ans = Math.cbrt(a);
+return ans;
+}
+public static void main(String[] args)
+{
+new RPCNumServer();
+}
+}
+
+
+2.	RPCNumClient.java
+
+import java.io.*;
+	import java.net.*;
+	public class RPCNumClient 
+	{
+	RPCNumClient()
+	{
+	try
+	{
+	InetAddress ia = InetAddress.getLocalHost();
+	DatagramSocket ds = new DatagramSocket();
+	DatagramSocket ds1 = new DatagramSocket(1300);
+	System.out.println("\nRPC Client\n");
+	System.out.println("1. Square of the number - square\n2. Square root of the number -squareroot\n3. Cube of the number - cube\n4. Cube root of the number - cuberoot");
+	System.out.println("Enter method name and the number\n");
+	while (true)
+	{
+	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	String str = br.readLine();
+	byte b[] = str.getBytes();
+	DatagramPacket dp = new
+	DatagramPacket(b,b.length,ia,1200);
+	ds.send(dp);
+	dp = new DatagramPacket(b,b.length);
+	ds1.receive(dp);
+	String s = new String(dp.getData(),0,dp.getLength());
+	System.out.println("\nResult = " + s + "\n");
+	}
+	}
+	catch (Exception e)
+	{
+	e.printStackTrace();
+	}
+	}
+	public static void main(String[] args)
+	{
+	new RPCNumClient();
+	}
+}
+
+I/o
+square 2 ,squareroot 4, cube 3, cuberoot 6.
+
+
+------------------------------------------Practical 4 NetBeans-----------------------------------
+Aim: Show the implementation of web services.
+Practical 4A: Implementing “Big” Web Service. 
+1) Creating a Web Service
+A. Choosing a Container: 
+1. Choose File > New Project. Select Web Application from the Java Web. 
+2. Name the project CalculatorWSApplication. Select a location for the project. Click Next. 
+1.Select your server and Java EE version and click Finish.
+  
+
+B. Creating a Web Service from a Java Class 
+1. Right-click the CalculatorWSApplication node and choose New > Web Service. 
+ 
+2. Name the web service CalculatorWS and type org.me.calculator in Package. Leave Create Web Service from Scratch selected. 
+If you are creating a Java EE 6 project on GlassFish or WebLogic, select Implement Web Service as a Stateless Session Bean. 
+
+3. Click Finish. The Projects window displays the structure of the new web service and the source code is shown in the editor area. 
+ 
+2) Adding an Operation to the Web Service The goal of this exercise is to add to the web service an operation that adds two numbers received from a client. The NetBeans IDE provides a dialog for adding an operation to a web service. You can open this dialog either in the web service visual designer or in the web service context menu. 
+ 
+A. To add an operation to the web service: 
+1. Expand Web Services --> CalculatorWS and right click and go to step nextstep
+2. Click Add Operation in either the visual designer or the context menu. The Add 
+Operation dialog opens. 
+3. In the upper part of the Add Operation dialog box, type add in Name and type int in the Return Type drop-down list. 
+4. In the lower part of the Add Operation dialog box, click Add and create a parameter of type int named i. 
+5. Click Add again and create a parameter of type int called j. You now see the following: 
+6. Click OK at the bottom of the Add Operation dialog box. You return to the editor.
+ 
+7. Expan webservice 
+ 8. Click on CalculatorWS And code the following. 
+
+@WebMethod(operationName = "add") 
+public int add(@WebParam(name = "i") int i, @WebParam(name = "j") int j) 
+{ int k = i + j; 
+return k; 
+} 
+ 
+3) Deploying and Testing the Web Service After you deploy a web service to a server, you can use the IDE to open the server's test client, if the server has a test client. The GlassFish and WebLogic servers provide test clients. 
+
+A. To test successful deployment to a GlassFish or WebLogic server: 
+
+1. Right-click the project and choose Deploy. The IDE starts the application server, builds the application, and deploys the application to the server 
+2. In the IDE's Projects the CalculatorWSApplication project. Right-click the CalculatorWS node, and choose Test Web Service 
+3. The IDE opens the tester page in your browser, if you deployed a web application to the GlassFish server. 
+ 
+4. If you deployed to the GlassFish server, type two numbers in the tester page, as shown below: 
+5. The sum of the two numbers is displayed: 
+  
+4) Consuming the Web Service Now that you have deployed the web service, you need to create a client to make use of the web service's add method. 
+1. Client: Java Class in Java SE Application 
+1. Choose File > New Project. Select Java Application from the Java category. Name the project CalculatorWS_Client_Application. Leave Create Main Class selected and accept all other default settings. Click Finish.
+   
+2. Right-click the CalculatorWS_Client_Application node and choose New > Web 
+Service Client. The New Web Service Client wizard opens. 
+ 
+
+3. Select Project as the WSDL source. Click Browse. Browse to the CalculatorWS web service in the CalculatorWSApplication project. When you have selected the web service, click OK. 
+4. Do not select a package name. Leave this field empty. 
+5. Leave the other settings at default and click Finish. The Projects window displays the new web service client, with a node for the add method that you created:
+   
+6. Double-click your main class so that it opens in the Source Editor. Drag the add node below the clientSide main() method. 
+
+You now see the following: 
+
+public static void main(String[] args) { 
+// TODO code application logic here 
+} 
+private static int add(int i, int j) { 
+org.me.calculator.CalculatorWS_Service service = new 
+org.me.calculator.CalculatorWS_Service(); 
+org.me.calculator.CalculatorWS port = service.getCalculatorWSPort(); 
+return port.add(i, j); 
+} 
+
+7. In the main() method body, replace the TODO comment with code that initializes 
+values for i and j, calls add(), and prints the result. 
+
+public static void main(String[] args) { 
+int i = 3; int j = 4;
+ int result = add(i, j); 
+System.out.println("Result = " + result); 
+} 
+
+8. Surround the main() method code with a try/catch block that prints an exception.
+
+public static void main(String[] args) { 
+try { 
+int i = 3; 
+int j = 4; int result = add(i, j); System.out.println("Result = " + result); 
+} catch (Exception ex) { 
+System.out.println("Exception: " + ex); 
+} 
+} 
+ 
+
+9. Right-click the project node and choose Run. 
+
+
+
+
+------------------------------------------------Practical 5 Google Drive------------------------------------------------------------------------
+Aim: Study and Implementation of storage as a Service.  
+Theory:  
+•Storage as a service (SaaS) is a business model in which a company leases or rents its storage infrastructure to another company or individuals to store data. Small companies and individuals often find this to be a convenient methodology for managing backups, and providing cost savings in personnel, hardware and physical space. 
+•A company providing SaaS may be called a storage service provider (SSP). Storage as a service can also be referred to as hosted storage 
+•Storage as a Service is a business model in which a large company rents space in their storage infrastructure to a smaller company or individual. 
+•In the enterprise, SaaS vendors are targeting secondary storage applications by promoting SaaS as a convenient way to manage backups. The key advantage to SaaS in the enterprise is in cost savings --in personnel, in hardware and in physical storage space.
+•For instance, instead of maintaining a large tape library and arranging to vault (store) tapes offsite, a network administrator that used SaaS for backups could specify what data on the network should be backed up and how often it should be backed up. 
+Procedure:
+Step 1: Login to Gmail Account and go to Google Drive 
+Step 2:  Right click on My Drive 
+Step 3: Right click on my Drive  
+Select -> More-> Google form  
+From here we can create google forms 
+Now Type the question or any thing which you want 
+Step 4: select my drive Right click on that and create google document and save the document. 
+Step 5: select my drive click on create slide 
+Step 6 : you can upload file or folder by using upload file and upload folder tab.
+
+------------------------Practical6 MD5 HASH-------------------------------------
+Aim:Implement the concept of Hashing     
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.io.*;
+public class MD5Example
+{
+	public static void main(String[] args)
+	{
+		String inputString;
+		BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+		try{
+			System.out.print("Enter any text:");
+			inputString=br.readLine();
+			MessageDigest md=MessageDigest.getInstance("MD5");
+			byte[] hashBytes=md.digest(inputString.getBytes());
+			
+			StringBuilder hexStringBuilder=new StringBuilder();
+			for(byte hashByte: hashBytes) {
+			hexStringBuilder.append(String.format("%02x",hashByte));
+
+}
+		System.out.println("MD5 Hash: "+hexStringBuilder.toString());
+		}
+		catch(Exception e)
+	{
+		e.printStackTrace();
+	}
+	}
+}
+
+---------------------------------------------------------------Practical 7 HyperV-------------------------------------------------------------------
+Aim:Implement Windows Hyper V virtualisation
+
+[ If Hyper v is not there in the Windows feature then ->How to install and enable Hyper-V on Windows 11/10 Home 
+Script to Enable Hyper-V
+
+pushd "%~dp0"
+dir /b %SystemRoot%\servicing\Packages\Hyper-V.mum >hyper-v.txt
+for /f %%i in ('findstr /i . hyper-v.txt 2^>nul') do dism /online /norestart /add-package:"%SystemRoot%\servicing\Packages\%%i"
+del hyper-v.txt
+Dism /online /enable-feature /featurename:Microsoft-Hyper-V -All /LimitAccess /ALL
+pause
+
+copy the above code in notepad and save it with Enable Hyper-V.bat extension and after that right click on this .bat file and run it as adminstrator the hyper v will be enable and if still any error occurs kindly change the pc. ]
+
+Step 1: Search for windows features on or off in search bar and open it.
+Step 2:Now scroll down click on  Hyper-v  (“Don’t Click  ok go to step no 3”).
+Step 3:Now scroll down click on  Windows Sandbox and then click on ok
+Step 4: Now Click on Restart Now (Pc will restart automatically and  it will take few minutes for the setup.)
+Step 5 : Now in Start Search for Hyper V-manager and open it.
+Step 6 : Now click on the new-> Virtual Machine (Located on the right hand side of the tab) to create a virtual machine.
+Step 7 : Press next and then assign the name for virtual machine and click on next.--> Specify Generation-->Select Gen 1--> Next
+Step 8 :  Now in the next assign memory(RAM ) 2048 or 4096 MB and click on next.
+Step 9 : Now in the Configure networking section select Default switch and click on next.
+Step 10 : Now in Connect Virtual Hard Disk Section select the location where you want to save the VM file And now increase of memory to 140GB and click on next (Note:select the drive which have atleast 140 GB free .)
+Step 11 : Now in Installation Option  section Select “Install an operating system from cd/DVD-ROM” ,
+Then Click on Image file -> Browse.. and select the Ubuntu Iso file and click on next. 
+(This file is in the TYCS_CC_SOFTWARE folder )
+Step 12 : Now click on the finish Now the Vm is created
+Step 13 : Now click on “Connect” located Right Handside in the Action (under the name of virtual machine which you have given.)
+Step 14 : Now click on start.
+Step 15 : Now use arrow keys and select the try or install ubuntu and press enter.
+after the installation perform the terminal command (press Ctrl, Alt and T keys together).
+i)Display present working directory: pwd.
+ii)Display today's date: date.
+iii) Display calendar of current year: cal
+iv) Display list of all users currently logged in: who.
+v) Display message "Hello World": echo "Hello World"
+
+----------------------------------------------------------------------Practical 8 ESXI-----------------------------------------------------------------------
+Aim:Implement virtualisation using VMWare ESXi Server and managing with vCenter
+
+Step 1:Open VMWare Workstation and Click on File->New Virtual Machine->Select Typical-->Next.
+Step 2:Select Installer disc image file -> Browse and select and your iso file(VMvisor Installer.iso) ->Next.
+Step 3:Name the Virtual Machine->Choose the location where you want to store your virtual machine- >  Enter the Size 40GB->Next.
+Note:-(Select the drive which have atleast 50GB free)
+step 4:Click on Finish.You can now see your Virtual Machine.
+step 5:Go to Edit virtual machine->click on Processors and then uncheck all the virtualization engine.
+step 6:Power on the VM and hit enter.
+Step 6.1:Wait for the ESXi to load->Select ESXi Standard Installer and Enter
+Step 7:Hit Enter and then F11 to continue->Enter
+step 8:Press Enter-> Select the Language ->US default.
+step 9:Enter the password and confirm installation.
+Step 10:Hit Enter and wait for rebooting server and then loading.
+Perform below steps in viclient
+Step 11:Install Viclient from TYCS_CC_SOFTWARES.And Open VMWare vSphere Client from start menu and type ip address which you will get from the ESXi VM and  enter the username:- root and password - same which was entered in step 9  and press login-->Ignore certificate.
+Step 12: After Login Click on Inventory -> Configuration tab.below localhost.localdomain.
+step 13: In Hardware Tab click on Storage-> datastore1.
+Step 14:Right CLick on datastore1->Browse datastore.
+Step 15:CLick on upload-->Upload Files and Select 'WIndows XP'iso file and upload it-->After uploading close the datastore1 tab.
+Step 16: Now go to 'Getting Started'-->Create a virtual machine-->typical->Next-->ENter name for your vm-->next-->Storage next-->Select Windows-->version 'Windows Xp pro 32bits' next-->next-->virtual disk size:8GB next-->Finish.
+STep 17: Below the ip address a new vm will appear.-->Right click on it -->Edit settings-->CD/DVD-->Select datastore iso file-->Browse-->datastore1-->Microsoft Windows XP iso file--->OK-->In Device status,Check Connect at power on.-->OK
+STep 18: Now click on the VM and Start it and go to console.
+
+---------------------------Practical 9 KVM------------------------
+Aim: Installation and Configuration of virtualization using KVM.
+
+Step 1: For creating a new virtual machine->Open VM Ware->Click on File->Click on New Virtual Machine.
+Step 2: Click on next. 
+Step 3: Select 'I will install os later'
+Step 3: Select ‘Linux’ and version ‘Red Hat Enterprise Linux 7 64-bit’ and Click on Next.
+Step 4: Give name to your VM: 'Red Hat Enterprise Linux 7 64-bit'
+Select Location where you want to save your VM file-->Now open the browse and click on the ‘D drive’ in the D drive click on VM folder in VM create one new folder name as ‘R7’ and then click on next.
+Step 5: Now set the maximum disk size to ‘40’ and click on next And select 'split virtual disk into multiple files'
+Step 6: Now Click on finish. OR 'Customise Hardware'-->Step8
+Step 7: Now click on edit virtual machine settings.
+Step 8: Now Click on memory and set memory as 4GB.
+Step 9: Now click on ‘CD\DVD’ and in connection select ‘use ISO image file’.select the iso image file and click on close-->Finish.
+Step 10: Now power on the Virtual machine.
+
+NOTE : Let the linux machine start and configure it 
+Step 11: Now select on install Red Hat Enterprises Linux.
+Step 12: Now select the language (English-->English US) and go to Software Selection.
+Step 13: In Base environment->select server with GUI and in Add-ons for selected environment->select Virtualization Client and Virtualization Hypervisor and click on done.
+Step 14:click Begin Installation.
+Step 15: Now click on Root Password. and Enter 123456 in password and confirmpassword.Click on Done.
+Step 16: Click on User Creation and fill the details click Done.
+	Full Name: MegaBytes
+	Password and confirm password: 123456
+Step 17: Click on Reboot
+Step 18: Select License Information and accept the conditions.
+Step 18: Your account will appear -> type the password.
+Step 19: Your Desktop will appear.
+Step 20: Run these commands on terminal:
+i)Display present working directory: pwd.
+ii)Display today's date: date.
+iii) Display calendar of current year: cal
+iv) Display list of all users currently logged in: who.
+v) Display message "Hello World": echo "Hello World"
+
+
+
+---------------------------PRACTICAL 10 ---------------------------
+
+
+Sure, let's break down the steps into simpler terms:
+
+1. *Launch an EC2 Instance*
+   - Access the AWS Management Console.
+   - Go to the EC2 Dashboard.
+   - Click on "Launch instance".
+   - Choose an instance type (like t3.micro).
+   - Name your instance (e.g., "Web Server").
+   - Configure network settings and security group.
+   - Add user data script for web server setup.
+   - Launch the instance.
+
+2. *Monitor Your Instance*
+   - Check instance status in the EC2 Dashboard.
+   - Ensure both system and instance reachability checks pass.
+   - View CloudWatch metrics for your instance.
+   - Optionally, get instance screenshot for troubleshooting.
+
+3. *Update Security Group and Access the Web Server*
+   - Copy the public IPv4 address of your instance.
+   - Modify the security group to allow HTTP traffic on port 80.
+   - Refresh the web browser to access the web server.
+
+4. *Resize Your Instance and EBS Volume*
+   - Stop the instance.
+   - Change instance type to a larger size (e.g., from t3.micro to t3.small).
+   - Modify the EBS volume size to increase storage capacity.
+   - Start the instance again.
+
+5. *Test Termination Protection*
+   - Try to terminate the instance (it should fail due to termination protection).
+   - Disable termination protection.
+   - Terminate the instance successfully.
+
+These steps provide a simplified overview of launching, managing, and resizing an Amazon EC2 instance, along with testing termination protection.
+

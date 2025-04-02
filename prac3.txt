@@ -1,0 +1,128 @@
+Practical 3A: A RMI based application program to display current date and time. Code:
+
+1.RMIInterfaceDate.java
+import java.rmi.*;
+public interface RMIInterfaceDate extends Remote { 
+public String printDate() throws Exception;
+}
+
+2.RMIServerDate.java
+import java.rmi.*; import java.rmi.server.*; import java.util.*; import java.util.Date;
+import java.text.SimpleDateFormat;
+public class RMIServerDate extends UnicastRemoteObject implements RMIInterfaceDate
+{
+public RMIServerDate() throws Exception
+{
+System.out.println("Server is initialised");
+}
+public String printDate() throws Exception
+{
+Date d = new Date();
+SimpleDateFormat myFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss"); 
+String myDate = myFormat.format(d);
+System.out.println("Server: "+myDate); 
+return myDate;
+}
+public static void main (String[] args) throws Exception 
+{
+System.out.println("RMIServerDate started.	");
+RMIServerDate obj = new RMIServerDate(); Naming.bind("RMIServerDate",obj); System.out.println("Object registered.	");
+}
+}
+
+
+3.RMIClientDate.java
+import java.rmi.*; import java.io.*;
+public class RMIClientDate
+{
+public static void main (String[] args) throws Exception
+{
+System.out.println("RMIClientDate started.	");
+RMIInterfaceDate server = (RMIInterfaceDate) Naming.lookup ("RMIServerDate"); String serverDate=server.printDate();
+System.out.println("Server: " +serverDate);
+}
+}
+
+1st Terminal commands
+>javac RMIInterfaceDate.java
+>javac RMIServerDate.java
+>javac RMIClientDate.java
+>rmic RMIServerDate
+>rmiregistry
+
+2nd Terminal commands
+>javac RMIServerDate.java
+>java RMIServerDate
+
+3rd Terminal Commands
+>javac RMIClientDate.java
+>java RMIClientDate
+
+
+ 
+Practical 3B: A RMI based application program that converts digits to words, e.g. 123 will be converted to one two three.
+Code:
+1.InterConvert.java
+import java.rmi.*;
+public interface InterConvert extends Remote {
+public String convertDigit(String no) throws Exception;
+}
+
+
+2.ServerConvert.java
+ import java.rmi.*; import java.rmi.server.*;
+public class ServerConvert extends UnicastRemoteObject implements InterConvert { public ServerConvert() throws Exception { }
+public String convertDigit(String no) throws Exception { String str = "";
+for(int i = 0; i < no.length(); i++) { int p = no.charAt(i); if( p == 48) { str += "zero ";
+} if( p == 49) {
+str += "one ";
+} if( p == 50) {
+str += "two ";
+} if( p == 51) {
+str += "three ";
+} if( p == 52) {
+str += "four ";
+} if( p == 53) {
+str += "five ";
+} if( p == 54) {
+str += "six "; 
+} if( p == 55) {
+str += "seven ";
+} if( p == 56) {
+str += "eight ";
+} if( p == 57) {
+str += "nine ";
+}
+} return str;
+}
+public static void main(String args[]) throws Exception { ServerConvert s1 = new ServerConvert(); Naming.bind("Wrd",s1);
+System.out.println("Object registered.	");
+}
+}
+
+
+3.ClientConvert.java
+ import java.rmi.*; import java.io.*;
+public class ClientConvert {
+public static void main(String args[]) throws Exception { InterConvert h1 = (InterConvert)Naming.lookup("Wrd");
+BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); System.out.println("Enter a number : \t");
+String no = br.readLine();
+String ans = h1.convertDigit(no);
+System.out.println("The word representation of the entered digit is : " +ans);
+}
+} 
+
+1st Terminal commands
+>javac InterConvert.java
+>javac ServerConvert.java
+>javac ClientConvert.java
+>rmic ServerConvert
+>rmiregistry
+
+2st Terminal commands
+>javac ServerConvert.java
+>java ServerConvert
+
+3st Terminal commands
+>javac ClientConvert.java
+>java ClientConvert
